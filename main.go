@@ -6,6 +6,7 @@ import (
 
 func router() *echo.Echo {
 	e := echo.New()
+	e.GET("/get_id", getSaveImagesID)
 
 	e.POST("/save_concent", saveConcentration)
 	return e

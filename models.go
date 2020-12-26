@@ -6,3 +6,8 @@ type SaveConcentration struct {
 	ID                string      `json:"id"`
 	ConcentrationData interface{} `json:"concentration_data"`
 }
+
+// GetSaveImagesID postされてきたdataのbind
+type GetSaveImagesID struct {
+	TypeData string `json:"type"`
+}
