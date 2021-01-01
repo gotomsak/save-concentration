@@ -25,7 +25,7 @@ func saveConcentration(c echo.Context) error {
 	}
 	mc, ctx := mongoConnect()
 	defer mc.Disconnect(ctx)
-	dbColl := mc.Database("fe-concentration").Collection(conc.TypeData)
+	dbColl := mc.Database(conc.TypeData).Collection(conc.Measurement)
 	res, err := dbColl.InsertOne(context.Background(), conc)
 	if err != nil {
 		return c.JSON(500, "insert error")
