@@ -17,12 +17,10 @@ func getSaveImagesID(c echo.Context) error {
 	if check != token {
 		return c.JSON(500, "access token mistaken")
 	}
-	gs := new(GetSaveImagesID)
-	if err := c.Bind(gs); err != nil {
-		return c.JSON(500, "type data not found")
-	}
-	dir := "./images/" + gs.TypeData
-	idFile := "./images/" + gs.TypeData + "/id"
+
+	gs := c.QueryParam("type")
+	dir := "./images/" + gs
+	idFile := "./images/" + gs + "/id"
 	if err := os.MkdirAll(dir, 0777); err != nil {
 		fmt.Println(err)
 	}
