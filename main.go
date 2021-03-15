@@ -20,7 +20,7 @@ func router() *echo.Echo {
 	}))
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
 
-	e.GET("/get_id", getSaveImagesID)
+	e.GET("/get_id", getID)
 
 	e.POST("/save_concent", saveConcentration)
 	return e
