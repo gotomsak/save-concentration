@@ -17,7 +17,7 @@ func mongoConnect() (database *mongo.Client, Context context.Context) {
 	PROTOCOL := os.Getenv("PROTOCOLMONGO")
 	uri := "mongodb://" + USER + ":" + PASS + "@" + PROTOCOL
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	c, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 
 	defer cancel()

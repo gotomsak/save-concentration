@@ -38,6 +38,5 @@ func getSaveImagesID(c echo.Context) error {
 		ioutil.WriteFile(idFile, bnewID, os.ModePerm)
 	}
 
-	return c.JSON(200, newID)
-
+	return c.JSON(200, &getSaveImagesIDRes{ID: newID})
 }

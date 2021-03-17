@@ -3,11 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"os"
 
 	"github.com/labstack/echo/v4"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func saveConcentration(c echo.Context) error {
@@ -19,21 +18,29 @@ func saveConcentration(c echo.Context) error {
 	if check != token {
 		return c.JSON(500, "access token mistaken")
 	}
-	conc := new(SaveConcentration)
-	if err := c.Bind(conc); err != nil {
-		return c.JSON(500, "concentration not found")
-	}
-	mc, ctx := mongoConnect()
-	defer mc.Disconnect(ctx)
-	dbColl := mc.Database(conc.TypeData).Collection(conc.Measurement)
-	res, err := dbColl.InsertOne(context.Background(), conc)
-	if err != nil {
-		return c.JSON(500, "insert error")
+
+	oldData := new(SaveConcentration)
+	newData := new(SaveConcentration)
+	if err := c.Bind(newData); err != nil {
+		return c.JSON(500, "concentratioon not found")
 	}
 
-	if oid, ok := res.InsertedID.(primitive.ObjectID); ok != true {
-		fmt.Println(oid)
-		return c.JSON(http.StatusInternalServerError, "Not objectid.ObjectID, do what you want")
+	mc, ctx := mongoConnect()
+	defer mc.Disconnect(ctx)
+
+	filter := bson.M{"_id": newData.ID}
+
+	dbColl := mc.Database(newData.Type).Collection(newData.Measurement)
+
+	err := dbColl.FindOne(context.Background(), filter).Decode(&oldData)
+	if err != nil {
+		fmt.Println(err)
+		return c.JSON(500, "find error")
 	}
+
+	oldData.Concentration = append(oldData.Concentration, newData.Concentration)
+
+	res, err := dbColl.UpdateOne(context.Background(), filter, bson.M{"$set": bson.M{"concentration": oldData.Concentration}})
+	fmt.Println(res)
 	return c.JSON(200, "ok")
 }
